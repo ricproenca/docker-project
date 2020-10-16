@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+    app:
+        build:
+            context: ./frontend
+        container_name: app
+        command: npm run start
+        volumes:
+            - ./frontend/src:/app/src
+        ports:
+            - '3000:3000'
+        tty: true
+        stdin_open: true
+        environment: 
+            - REACT_APP_API_PORT=3001
+            - REACT_APP_API_URL=localhost
+
+    api:
+        build:
+            context: ./backend
+        container_name: api
+        command: npm run dev
+        volumes:
+            - ./backend/src:/app/src
+        ports:
+            - '3001:3001'
+        environment: 
+            - PORT=3001
+            - URL=localhost
+            - MONGO_PORT=27017
+            - MONGO_URL=api_mongo
+    
+    api_mongo:
+        image: mongo:latest
+        container_name: api_mongo
+        volumes:
+            - api_mongo_db:/data/db
+        ports:
+            - '27017:27017'
+
+volumes:
+    api_mongo_db:
