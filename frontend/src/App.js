@@ -5,7 +5,8 @@ import './App.css';
 
 function App() {
 
-  const [response, setResponse] = useState('');
+  const [testResponse, setTestResponse] = useState('');
+  const [mongoHealth, setMongoHealth] = useState('fail');
 
   useEffect(() => {
     const API_URL = process.env.REACT_APP_API_URL || 'localhost';
@@ -15,12 +16,28 @@ function App() {
 
     const fetchData = async () => {
       const result = await axios(`${API_BASE_ADDRESS}/test/`)
-      setResponse(result.data);
+      setTestResponse(result.data);
     }
 
     fetchData();
     return () => {};
   })
+
+  useEffect(() => {
+  const checkHealth = async () => {
+    const API_URL = process.env.REACT_APP_API_URL || 'localhost';
+    const API_PORT = process.env.REACT_APP_API_PORT || '3002';
+    const API_BASE_ADDRESS = `http://${API_URL}:${API_PORT}`;
+    console.log('API_BASE_ADDRESS: ', API_BASE_ADDRESS)
+
+    const result = await axios(`${API_BASE_ADDRESS}/healthcheck/`)
+      setMongoHealth(result.data);
+    }
+
+    checkHealth();
+    return () => {};
+  })
+
 
   return (
     <div className="App">
@@ -35,7 +52,8 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          The response is: {response}
+        <p>The test response is: {testResponse}</p>
+        <p>The Health Check: {mongoHealth.message}</p>
         </a>
       </header>
     </div>
